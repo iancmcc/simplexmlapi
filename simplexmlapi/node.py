@@ -13,7 +13,7 @@ class AttributeParsingError(Exception):
 
 def _getText(rootnode):
     """
-    Get the text value from a Node.
+    Get the text value from a C{Node}.
 
     This is taken nearly verbatim from an example in the Python documentation.
     L{http://docs.python.org/lib/dom-example.html}
@@ -28,26 +28,44 @@ def _getText(rootnode):
 class DotNodeParent(type):
     """
     Metaclass that makes sure everything in the sequence passed to the 
-    constructor is a DotNode.
+    constructor is a C{DotNode}.
     """
     def __call__(self, sequence):
+        """
+        @param sequence: The sequence that should be contained by this
+                         instance.
+        @type sequence: tuple, list
+        @rtype: instance
+        """
         mutate = lambda item:item.__class__==DotNode and item or DotNode(item)
         return type.__call__(self, [mutate(item) for item in sequence])
 
 
 class DotNodeList(NodeList):
     """
-    A NodeList that asks its first child for attributes.
+    A C{NodeList} that asks its first child for attributes.
+
+    One can also access this like a dictionary to get a C{NodeAttribute} on
+    the first child.
     """
     __metaclass__ = DotNodeParent
     
     def __getitem__(self, index):
+        """
+        If ``index`` is an integer, return the ``index``th item in the list.
+        Otherwise, attempt to retrieve the attribute named ``index`` on the
+        first child.
+        """
         try:
             return super(DotNodeList, self).__getitem__(int(index))
         except ValueError:
             return self.getAttribute(index)
     
     def __getattribute__(self, attr):
+        """
+        All attribute access should be passed off to the first item in the
+        sequence.
+        """
         return getattr(self[0], attr)
 
 
@@ -56,19 +74,38 @@ class DotNode(object):
     An object whose getattr gets child nodes.
     """     
     def __init__(self, node):
+        """
+        @param node: The C{Node} to wrap.
+        @type node: C{xml.dom.minidom.Node}
+        """
         self._node = node
 
     def __getattr__(self, attr):
         """
-        Get the next object specified.
+        Split the attribute and pass it to L{delegate} to be sent on to the
+        resolving method.
         """
-        def delegate(name, idx=None):
-            if idx is None:
+        def delegate(name, idx=""):
+            """
+            Treat ``name`` as a tagName, an attribute or a list index,
+            depending on the value of ``idx``.
+
+            @param name: The name to pass on to the accessor for resolution
+            @type name: str
+            @param idx: The identifier (empty for a node, "a" for an attribute,
+                        an integer for an index)
+            @type idx: str
+            @return: void
+            """
+            if not idx:
+                # Empty idx, so it's a node
                 return self.getChildren(name)
             elif idx=='a':
+                # idx is 'a', so it's an attribute
                 return self.getAttribute(name)
             else:
                 try:
+                    # Try casting idx as an integer to see if it's a list index
                     return self.getItem(name, int(idx))
                 except ValueError:
                     raise AttributeParsingError(
@@ -76,9 +113,22 @@ class DotNode(object):
         return delegate(*attr.split('__'))
     
     def getName(self):
+        """
+        @return: The tag name of the root node.
+        @rtype: str
+        """
         return self._node.tagName
        
     def getChildren(self, name, *args):
+        """
+        Attempt to resolve ``name`` as the tag name of a C{Node}. If no node
+        with that name exists, attempt to resolve it as a C{NodeAttribute}.
+
+        @param name: The name to attempt to resolve.
+        @type name: str
+        @return: The matching nodes or attribute.
+        @rtype: C{DotNodeAttribute} or C{DotNodeList}
+        """
         children = self._node.getElementsByTagName(name)
         if not children:
             try:
@@ -89,6 +139,16 @@ class DotNode(object):
         return DotNodeList(children)
     
     def getItem(self, name, idx):
+        """
+        Attempt to retrieve the ``idx``th child node that has tagName ``name``.
+
+        @param name: The tag name to resolve into child nodes.
+        @type name: str
+        @param idx: The list index
+        @type idx: int
+        @return: A sequence containing the matching node.
+        @rtype: C{DotNodeList}
+        """
         try:
             return DotNodeList((self.getChildren(name)[idx],))
         except IndexError:
@@ -96,6 +156,14 @@ class DotNode(object):
                                 name, self.getName()))
     
     def getAttribute(self, name, *args):
+        """
+        Get the ``name`` attribute on ```self._node```.
+
+        @param name: The attribute name
+        @type name: str
+        @return: The matching attribute
+        @rtype: C{DotNodeAttribute}
+        """
         attrval = self._node.getAttribute(name)
         if not attrval:
             raise NoSuchAttribute('No %s attribute exists on %s node.' % (
@@ -103,19 +171,41 @@ class DotNode(object):
         return DotNodeAttribute(attrval)
     
     def getValue(self):
+        """
+        Get the text value of ``self._node``.
+
+        @return: The text value of ``self._node``
+        @rtype: str
+        """
         return unicode(_getText(self._node))
+
+    # Property accessor
     _ = property(getValue)
 
-        
+
 class DotXMLDoc(object):
+    """
+    Accepts the source of an XML document, parses it, and provides dotted name
+    access to the root node.
+    """
     def __init__(self, source):
+        """
+        @param source: A string containing an XML document.
+        @type source: str
+        """
         self._doc = parseString(source)
         self._root = DotNode(self._doc.documentElement)
 
     def __getattr__(self, attr):
+        """
+        Pass off attribute access to the root node.
+        """
         return getattr(self._root, attr)
     
     def __del__(self):
+        """
+        Remove the XML document from memory.
+        """
         self._doc.unlink()
 
 
