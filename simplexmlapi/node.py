@@ -1,5 +1,5 @@
 from xml.dom.minicompat import *
-from xml.dom.minidom import Node, parseString
+from xml.dom.minidom import Node, parseString, Attr
 
 class NoSuchNode(Exception): 
     "No node is accessible via the dotted name given."
@@ -16,7 +16,7 @@ def _getText(rootnode):
     Get the text value from a C{Node}.
 
     This is taken nearly verbatim from an example in the Python documentation.
-    L{http://docs.python.org/lib/dom-example.html}
+    U{http://docs.python.org/lib/dom-example.html}
     """
     rc = ""
     for node in rootnode.childNodes:
@@ -28,7 +28,7 @@ def _getText(rootnode):
 class DotNodeParent(type):
     """
     Metaclass that makes sure everything in the sequence passed to the 
-    constructor is a C{DotNode}.
+    constructor is a L{DotNode}.
     """
     def __call__(self, sequence):
         """
@@ -43,17 +43,16 @@ class DotNodeParent(type):
 
 class DotNodeList(NodeList):
     """
-    A C{NodeList} that asks its first child for attributes.
+    A L{NodeList} that asks its first child for attributes.
 
-    One can also access this like a dictionary to get a C{NodeAttribute} on
-    the first child.
+    One can also access this like a dictionary to get an L{Attr} on the first child.
     """
     __metaclass__ = DotNodeParent
     
     def __getitem__(self, index):
         """
-        If ``index`` is an integer, return the ``index``th item in the list.
-        Otherwise, attempt to retrieve the attribute named ``index`` on the
+        If C{index} is an integer, return the C{index}th item in the list.
+        Otherwise, attempt to retrieve the attribute named C{index} on the
         first child.
         """
         try:
@@ -75,20 +74,20 @@ class DotNode(object):
     """     
     def __init__(self, node):
         """
-        @param node: The C{Node} to wrap.
-        @type node: C{xml.dom.minidom.Node}
+        @param node: The L{Node} to wrap.
+        @type node: L{Node}
         """
         self._node = node
 
     def __getattr__(self, attr):
         """
-        Split the attribute and pass it to L{delegate} to be sent on to the
+        Split the attribute and pass it to C{delegate} to be sent on to the
         resolving method.
         """
         def delegate(name, idx=""):
             """
-            Treat ``name`` as a tagName, an attribute or a list index,
-            depending on the value of ``idx``.
+            Treat C{name} as a tagName, an attribute or a list index,
+            depending on the value of C{idx}.
 
             @param name: The name to pass on to the accessor for resolution
             @type name: str
@@ -121,13 +120,13 @@ class DotNode(object):
        
     def getChildren(self, name, *args):
         """
-        Attempt to resolve ``name`` as the tag name of a C{Node}. If no node
-        with that name exists, attempt to resolve it as a C{NodeAttribute}.
+        Attempt to resolve C{name} as the tag name of a L{Node}. If no node
+        with that name exists, attempt to resolve it as an L{Attr}.
 
         @param name: The name to attempt to resolve.
         @type name: str
         @return: The matching nodes or attribute.
-        @rtype: C{DotNodeAttribute} or C{DotNodeList}
+        @rtype: L{DotNodeAttribute} or L{DotNodeList}
         """
         children = self._node.getElementsByTagName(name)
         if not children:
@@ -140,14 +139,14 @@ class DotNode(object):
     
     def getItem(self, name, idx):
         """
-        Attempt to retrieve the ``idx``th child node that has tagName ``name``.
+        Attempt to retrieve the C{idx}th child node that has tagName C{name}.
 
         @param name: The tag name to resolve into child nodes.
         @type name: str
         @param idx: The list index
         @type idx: int
         @return: A sequence containing the matching node.
-        @rtype: C{DotNodeList}
+        @rtype: L{DotNodeList}
         """
         try:
             return DotNodeList((self.getChildren(name)[idx],))
@@ -157,12 +156,12 @@ class DotNode(object):
     
     def getAttribute(self, name, *args):
         """
-        Get the ``name`` attribute on ```self._node```.
+        Get the C{name} attribute on C{self._node}.
 
         @param name: The attribute name
         @type name: str
         @return: The matching attribute
-        @rtype: C{DotNodeAttribute}
+        @rtype: L{DotNodeAttribute}
         """
         attrval = self._node.getAttribute(name)
         if not attrval:
@@ -172,9 +171,9 @@ class DotNode(object):
     
     def getValue(self):
         """
-        Get the text value of ``self._node``.
+        Get the text value of C{self._node}.
 
-        @return: The text value of ``self._node``
+        @return: The text value of C{self._node}
         @rtype: str
         """
         return unicode(_getText(self._node))
@@ -211,9 +210,9 @@ class DotXMLDoc(object):
 
 class DotNodeAttribute(str):
     """
-    A string with a getValue method.
+    A string with a C{getValue} method.
 
-    This allows attribute values to be accessed just like DotNodes.
+    This allows attribute values to be accessed just like L{DotNode}s.
     """
     def getValue(self): return self
     _ = property(getValue)

@@ -3,8 +3,8 @@ A simple, fast way to create dotted-name APIs for XML data
 
 simplexmlapi exposes an API similar to those of the marshal and pickle modules.
 
-An XML document may be loaded into a SimpleXmlApi object and traversed using
-Python-like dotted names. One may also map attributes of the SimpleXmlApi
+An XML document may be loaded into a L{SimpleXmlApi} object and traversed using
+Python-like dotted names. One may also map attributes of the L{SimpleXmlApi}
 object to given dotted names.
 
 Each segment of the dotted name will be resolved to the first child element
@@ -13,16 +13,16 @@ attribute on the current element. If no such attribute exists, an exception
 will be raised.
 
 Traversing the tree manually -- that is, without using an attribute map -- will
-return a DotNode or DotNodeAttribute instance. To get the text value of a node
-or attribute, access the '_' property or call the getValue() method. When
+return a L{DotNode} or L{DotNodeAttribute} instance. To get the text value of a node
+or attribute, access the '_' property or call the C{getValue()} method. When
 accessing an attribute mapping, the text value is returned automatically; no
-call to getValue() is necessary.
+call to C{getValue()} is necessary.
 
-If multiple matching child elements exist, '__0' may be appended to the name,
-where '0' is the index of the desired element.
+If multiple matching child elements exist, C{__0} may be appended to the name,
+where C{'0'} is the index of the desired element.
 
 In case of tag name/attribute conflicts, attribute resolution may be specified
-explicitly by appending '__a' to the name.
+explicitly by appending C{__a} to the name.
 
 Parsing an XML document and traversing elements with dotted names:
 
@@ -71,7 +71,7 @@ Mapping dotted names to attributes:
     >>> api2.thing
     u'A Thing'
 
-Extending SimpleXmlApi:
+Extending L{SimpleXmlApi}:
     
     >>> import simplexmlapi
     >>> class SampleApi(simplexmlapi.SimpleXmlApi):
@@ -101,13 +101,13 @@ from api import SimpleXmlApi, factory as _factory
 
 def load(fp, map=None, cls=None, **kwargs):
     """
-    Parse ``fp`` (a file-like object containing an XML document) and return a
-    dotted-name-walkable ``SimpleXmlApi`` instance.
+    Parse C{fp} (a file-like object containing an XML document) and return a
+    dotted-name-walkable L{SimpleXmlApi} instance.
 
-    If ``map`` is specified, attributes will be created on the returned
-    instance mapping ``map``'s keys to its associated dotted-name values.
+    If C{map} is specified, attributes will be created on the returned
+    instance mapping L{map}'s keys to its associated dotted-name values.
 
-    To use a custom ``SimpleXmlApi`` subclass, specify it with the ``cls``
+    To use a custom L{SimpleXmlApi} subclass, specify it with the C{cls}
     kwarg.
     """
     return _factory(fp.read(), map, cls, **kwargs)
@@ -115,13 +115,13 @@ def load(fp, map=None, cls=None, **kwargs):
 
 def loads(s, map=None, cls=None, **kwargs):
     """
-    Parse ``s`` (a ``str`` or ``unicode`` instance containing an XML document)
-    and return a dotted-name-walkable ``SimpleXmlApi`` instance.
+    Parse C{s} (a C{str} or C{unicode} instance containing an XML document)
+    and return a dotted-name-walkable L{SimpleXmlApi} instance.
 
-    If ``map`` is specified, attributes will be created on the returned
-    instance mapping ``map``'s keys to its associated dotted-name values.
+    If map is specified, attributes will be created on the returned
+    instance mapping map's keys to its associated dotted-name values.
 
-    To use a custom ``SimpleXmlApi`` subclass, specify it with the ``cls``
+    To use a custom L{SimpleXmlApi} subclass, specify it with the L{cls}
     kwarg.
     """
     return _factory(s, map, cls, **kwargs)

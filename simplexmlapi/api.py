@@ -6,10 +6,10 @@ class SimpleXmlApi(object):
 
     Accessing an attribute that has been mapped to a dotted name will return
     the text value of that node/attribute. If an attribute is passed that 
-    isn't in the map, it's passed off to the C{DotXMLDoc} instance, so that 
+    isn't in the map, it's passed off to the L{DotXMLDoc} instance, so that 
     the document can be walked manually.
 
-    May be subclassed, overriding _map, to provide custom APIs for known XML
+    May be subclassed, overriding C{_map}, to provide custom APIs for known XML
     structures.
     """
     _map = {}
@@ -55,7 +55,7 @@ class SimpleXmlApi(object):
         Update the attribute registry with one or more mappings. Will not
         remove attributes that currently exist.
 
-        @param map: A dictionary of the form ``{'attribute':'dotted.name'}
+        @param map: A dictionary of the form C{\{'attribute':'dotted.name'\}}
         @type map: dict
         @return: void
         """
@@ -96,10 +96,10 @@ class SimpleXmlApi(object):
 
 def factory(source, map=None, cls=None):
     """
-    Create a new C{SimpleXmlApi} instance using the given source and optional
+    Create a new L{SimpleXmlApi} instance using the given source and optional
     attribute map.
 
-    To create an instance of a subclass, pass in the P{cls} attribute.
+    To create an instance of a subclass, pass in the C{cls} attribute.
     """
     if cls is None:
         cls = SimpleXmlApi
