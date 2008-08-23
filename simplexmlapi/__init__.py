@@ -94,7 +94,7 @@ Extending SimpleXmlApi:
     u'A Thing'
 
 """
-__version__ = '0.1'
+__version__ = '0.1.1'
 __all__ = ['load', 'loads', 'SimpleXmlApi']
 
 from api import SimpleXmlApi, factory as _factory
