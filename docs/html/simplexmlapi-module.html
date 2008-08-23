@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>simplexmlapi</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th bgcolor="#70b0f0" class="navbar-select"
+          >&nbsp;&nbsp;&nbsp;Home&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        Package&nbsp;simplexmlapi
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="simplexmlapi-module.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PACKAGE DESCRIPTION ==================== -->
+<h1 class="epydoc">Package simplexmlapi</h1><p class="nomargin-top"><span class="codelink"><a href="simplexmlapi-pysrc.html">source&nbsp;code</a></span></p>
+<p>A simple, fast way to create dotted-name APIs for XML data</p>
+  <p>simplexmlapi exposes an API similar to those of the marshal and pickle
+  modules.</p>
+  <p>An XML document may be loaded into a <a 
+  href="simplexmlapi.api.SimpleXmlApi-class.html" 
+  class="link">SimpleXmlApi</a> object and traversed using Python-like 
+  dotted names. One may also map attributes of the <a 
+  href="simplexmlapi.api.SimpleXmlApi-class.html" 
+  class="link">SimpleXmlApi</a> object to given dotted names.</p>
+  <p>Each segment of the dotted name will be resolved to the first child 
+  element with that tag name. If no such element exists, it will be 
+  resolved to an attribute on the current element. If no such attribute 
+  exists, an exception will be raised.</p>
+  <p>Traversing the tree manually -- that is, without using an attribute 
+  map -- will return a <a href="simplexmlapi.node.DotNode-class.html" 
+  class="link">DotNode</a> or <a 
+  href="simplexmlapi.node.DotNodeAttribute-class.html" 
+  class="link">DotNodeAttribute</a> instance. To get the text value of a 
+  node or attribute, access the '_' property or call the 
+  <code>getValue()</code> method. When accessing an attribute mapping, the 
+  text value is returned automatically; no call to <code>getValue()</code> 
+  is necessary.</p>
+  <p>If multiple matching child elements exist, <code>__0</code> may be 
+  appended to the name, where <code>'0'</code> is the index of the desired 
+  element.</p>
+  <p>In case of tag name/attribute conflicts, attribute resolution may be 
+  specified explicitly by appending <code>__a</code> to the name.</p>
+  <p>Parsing an XML document and traversing elements with dotted names:</p>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">import</span> simplexmlapi
+<span class="py-prompt">&gt;&gt;&gt; </span>s = <span class="py-string">'''</span>
+<span class="py-more">... </span><span class="py-string">    &lt;xml&gt; &lt;obj&gt;</span>
+<span class="py-more">... </span><span class="py-string">        &lt;prop name=&quot;value&quot;&gt;A Value&lt;/prop&gt;</span>
+<span class="py-more">... </span><span class="py-string">        &lt;prop name=&quot;thing&quot;&gt;A Thing&lt;/prop&gt;</span>
+<span class="py-more">... </span><span class="py-string">    &lt;/obj&gt; &lt;/xml&gt;</span>
+<span class="py-more">... </span><span class="py-string">    '''</span>
+<span class="py-prompt">&gt;&gt;&gt; </span>api = simplexmlapi.loads(s)
+<span class="py-prompt">&gt;&gt;&gt; </span>api.obj.prop._
+<span class="py-output">u'A Value'</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>api.obj.prop.name._
+<span class="py-output">'value'</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>api.obj.prop__1.name._
+<span class="py-output">'thing'</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>api.obj.prop__1.name__a._
+<span class="py-output">'thing'</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">from</span> StringIO <span class="py-keyword">import</span> StringIO
+<span class="py-prompt">&gt;&gt;&gt; </span>io = StringIO(s)
+<span class="py-prompt">&gt;&gt;&gt; </span>api = simplexmlapi.load(io)
+<span class="py-prompt">&gt;&gt;&gt; </span>api.obj.prop._
+<span class="py-output">u'A Value'</span></pre>
+  <p>Mapping dotted names to attributes:</p>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">import</span> simplexmlapi
+<span class="py-prompt">&gt;&gt;&gt; </span>s = <span class="py-string">'''</span>
+<span class="py-more">... </span><span class="py-string">    &lt;xml&gt; &lt;obj&gt;</span>
+<span class="py-more">... </span><span class="py-string">        &lt;prop name=&quot;value&quot;&gt;A Value&lt;/prop&gt;</span>
+<span class="py-more">... </span><span class="py-string">        &lt;prop name=&quot;thing&quot;&gt;A Thing&lt;/prop&gt;</span>
+<span class="py-more">... </span><span class="py-string">    &lt;/obj&gt; &lt;/xml&gt;</span>
+<span class="py-more">... </span><span class="py-string">    '''</span>
+<span class="py-prompt">&gt;&gt;&gt; </span>api = simplexmlapi.loads(s)
+<span class="py-prompt">&gt;&gt;&gt; </span>api.add_mapping(<span class="py-string">'value'</span>, <span class="py-string">'obj.prop__0'</span>)
+<span class="py-prompt">&gt;&gt;&gt; </span>api.add_mapping(<span class="py-string">'thing'</span>, <span class="py-string">'obj.prop__1'</span>)
+<span class="py-prompt">&gt;&gt;&gt; </span>api.value
+<span class="py-output">u'A Value'</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>api.thing
+<span class="py-output">u'A Thing'</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>attr_map = dict(value=<span class="py-string">&quot;obj.prop__0&quot;</span>, thing=<span class="py-string">&quot;obj.prop__1&quot;</span>)
+<span class="py-prompt">&gt;&gt;&gt; </span>api2 = simplexmlapi.loads(s, map=attr_map)
+<span class="py-prompt">&gt;&gt;&gt; </span>api2.value
+<span class="py-output">u'A Value'</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>api2.thing
+<span class="py-output">u'A Thing'</span></pre>
+  <p>Extending <a href="simplexmlapi.api.SimpleXmlApi-class.html" 
+  class="link">SimpleXmlApi</a>:</p>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">import</span> simplexmlapi
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">class</span> <span class="py-defname">SampleApi</span>(simplexmlapi.SimpleXmlApi):
+<span class="py-more">... </span>    _map = {
+<span class="py-more">... </span>        <span class="py-string">'value'</span> : <span class="py-string">'obj.prop__0'</span>,
+<span class="py-more">... </span>        <span class="py-string">'thing'</span> : <span class="py-string">'obj.prop__1'</span> }
+<span class="py-more">...</span>
+<span class="py-prompt">&gt;&gt;&gt; </span>s = <span class="py-string">'''</span>
+<span class="py-more">... </span><span class="py-string">    &lt;xml&gt;</span>
+<span class="py-more">... </span><span class="py-string">        &lt;obj&gt;</span>
+<span class="py-more">... </span><span class="py-string">            &lt;prop name=&quot;value&quot;&gt;A Value&lt;/prop&gt;</span>
+<span class="py-more">... </span><span class="py-string">            &lt;prop name=&quot;thing&quot;&gt;A Thing&lt;/prop&gt;</span>
+<span class="py-more">... </span><span class="py-string">        &lt;/obj&gt;</span>
+<span class="py-more">... </span><span class="py-string">    &lt;/xml&gt;</span>
+<span class="py-more">... </span><span class="py-string">    '''</span>
+<span class="py-prompt">&gt;&gt;&gt; </span>api = simplexmlapi.loads(s, cls=SampleApi)
+<span class="py-prompt">&gt;&gt;&gt; </span>api.value
+<span class="py-output">u'A Value'</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>api.thing
+<span class="py-output">u'A Thing'</span></pre>
+
+<hr />
+<div class="fields">      <p><strong>Version:</strong>
+        0.1.1
+      </p>
+</div><!-- ==================== SUBMODULES ==================== -->
+<a name="section-Submodules"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Submodules</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Submodules"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr><td class="summary">
+  <ul class="nomargin">
+    <li class="private"> <strong class="uidlink"><a href="simplexmlapi.api-module.html" onclick="show_private();">simplexmlapi.api</a></strong>    </li>
+    <li class="private"> <strong class="uidlink"><a href="simplexmlapi.node-module.html" onclick="show_private();">simplexmlapi.node</a></strong>    </li>
+    <li> <strong class="uidlink"><a href="simplexmlapi.tests-module.html">simplexmlapi.tests</a></strong>
+    <ul>
+    <li> <strong class="uidlink"><a href="simplexmlapi.tests.test_api-module.html">simplexmlapi.tests.test_api</a></strong>    </li>
+    <li> <strong class="uidlink"><a href="simplexmlapi.tests.test_dotnode-module.html">simplexmlapi.tests.test_dotnode</a></strong>    </li>
+    </ul>
+    </li>
+  </ul></td></tr>
+</table>
+
+<br />
+<!-- ==================== CLASSES ==================== -->
+<a name="section-Classes"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Classes</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Classes"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="simplexmlapi.api.SimpleXmlApi-class.html" class="summary-name">SimpleXmlApi</a><br />
+      The main API class, comprising a map of attributes to dotted path 
+        names.
+    </td>
+  </tr>
+</table>
+<!-- ==================== FUNCTIONS ==================== -->
+<a name="section-Functions"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Functions</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Functions"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="simplexmlapi-module.html#load" class="summary-sig-name">load</a>(<span class="summary-sig-arg">fp</span>,
+        <span class="summary-sig-arg">map</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">cls</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
+      Parse <code>fp</code> (a file-like object containing an XML document)
+      and return a dotted-name-walkable <a 
+      href="simplexmlapi.api.SimpleXmlApi-class.html" 
+      class="link">SimpleXmlApi</a> instance.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="simplexmlapi-pysrc.html#load">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="simplexmlapi-module.html#loads" class="summary-sig-name">loads</a>(<span class="summary-sig-arg">s</span>,
+        <span class="summary-sig-arg">map</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">cls</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
+      Parse <code>s</code> (a <code>str</code> or <code>unicode</code> 
+      instance containing an XML document) and return a 
+      dotted-name-walkable <a 
+      href="simplexmlapi.api.SimpleXmlApi-class.html" 
+      class="link">SimpleXmlApi</a> instance.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="simplexmlapi-pysrc.html#loads">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== FUNCTION DETAILS ==================== -->
+<a name="section-FunctionDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Function Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-FunctionDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="load"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">load</span>(<span class="sig-arg">fp</span>,
+        <span class="sig-arg">map</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">cls</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="simplexmlapi-pysrc.html#load">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Parse <code>fp</code> (a file-like object containing an XML document) 
+  and return a dotted-name-walkable <a 
+  href="simplexmlapi.api.SimpleXmlApi-class.html" 
+  class="link">SimpleXmlApi</a> instance.</p>
+  <p>If <code>map</code> is specified, attributes will be created on the 
+  returned instance mapping <code class="link">map</code>'s keys to its 
+  associated dotted-name values.</p>
+  <p>To use a custom <a href="simplexmlapi.api.SimpleXmlApi-class.html" 
+  class="link">SimpleXmlApi</a> subclass, specify it with the 
+  <code>cls</code> kwarg.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="loads"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">loads</span>(<span class="sig-arg">s</span>,
+        <span class="sig-arg">map</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">cls</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="simplexmlapi-pysrc.html#loads">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Parse <code>s</code> (a <code>str</code> or <code>unicode</code> 
+  instance containing an XML document) and return a dotted-name-walkable <a
+  href="simplexmlapi.api.SimpleXmlApi-class.html" 
+  class="link">SimpleXmlApi</a> instance.</p>
+  <p>If map is specified, attributes will be created on the returned 
+  instance mapping map's keys to its associated dotted-name values.</p>
+  <p>To use a custom <a href="simplexmlapi.api.SimpleXmlApi-class.html" 
+  class="link">SimpleXmlApi</a> subclass, specify it with the <code 
+  class="link">cls</code> kwarg.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th bgcolor="#70b0f0" class="navbar-select"
+          >&nbsp;&nbsp;&nbsp;Home&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Sat Aug 23 09:55:45 2008
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

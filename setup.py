@@ -5,7 +5,7 @@ ez_setup.use_setuptools()
 
 from setuptools import setup, find_packages
 
-version = '0.1'
+version = '0.1.1'
 LONG_DESCRIPTION = """
 simplexmlapi provides an easy way to access XML data. It is pure Python code with no dependencies.
 
