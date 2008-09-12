@@ -201,12 +201,6 @@ class DotXMLDoc(object):
         """
         return getattr(self._root, attr)
     
-    def __del__(self):
-        """
-        Remove the XML document from memory.
-        """
-        self._doc.unlink()
-
 
 class DotNodeAttribute(str):
     """
