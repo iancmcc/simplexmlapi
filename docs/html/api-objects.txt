@@ -47,7 +47,6 @@ simplexmlapi.node.DotNodeList.__getitem__	simplexmlapi.node.DotNodeList-class.ht
 simplexmlapi.node.DotNodeParent	simplexmlapi.node.DotNodeParent-class.html
 simplexmlapi.node.DotNodeParent.__call__	simplexmlapi.node.DotNodeParent-class.html#__call__
 simplexmlapi.node.DotXMLDoc	simplexmlapi.node.DotXMLDoc-class.html
-simplexmlapi.node.DotXMLDoc.__del__	simplexmlapi.node.DotXMLDoc-class.html#__del__
 simplexmlapi.node.DotXMLDoc.__getattr__	simplexmlapi.node.DotXMLDoc-class.html#__getattr__
 simplexmlapi.node.DotXMLDoc.__init__	simplexmlapi.node.DotXMLDoc-class.html#__init__
 simplexmlapi.node.NoSuchAttribute	simplexmlapi.node.NoSuchAttribute-class.html
